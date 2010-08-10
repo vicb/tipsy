@@ -28,7 +28,7 @@
                 });
                 
                 var actualWidth = $tip[0].offsetWidth, actualHeight = $tip[0].offsetHeight;
-                var gravity = (typeof this.options.gravity == 'function')
+                var gravity = this.options.actualGravity = (typeof this.options.gravity == 'function')
                                 ? this.options.gravity.call(this.$element[0])
                                 : this.options.gravity;
                 
@@ -61,7 +61,7 @@
                 if (this.options.fade) {
                     $tip.stop().css({opacity: 0, display: 'block', visibility: 'visible'}).animate({opacity: this.options.opacity});
                 } else {
-                    $tip.css({visibility: 'visible', opacity: this.options.opacity});
+                    this.options.showTip.call($tip, this.options);
                 }
             }
         },
@@ -70,7 +70,7 @@
             if (this.options.fade) {
                 this.tip().stop().fadeOut(function() { $(this).remove(); });
             } else {
-                this.tip().remove();
+                this.options.hideTip.call(this.tip(), this.options);
             }
         },
         
@@ -168,21 +168,7 @@
         return this;
         
     };
-    
-    $.fn.tipsy.defaults = {
-        delayIn: 0,
-        delayOut: 0,
-        fade: false,
-        fallback: '',
-        gravity: 'n',
-        html: false,
-        live: false,
-        offset: 0,
-        opacity: 0.8,
-        title: 'title',
-        trigger: 'hover'
-    };
-    
+       
     // Overwrite this method to provide options on a per-element basis.
     // For example, you could store the gravity in a 'tipsy-gravity' attribute:
     // return $.extend({}, options, {gravity: $(ele).attr('tipsy-gravity') || 'n' });
@@ -198,5 +184,29 @@
     $.fn.tipsy.autoWE = function() {
         return $(this).offset().left > ($(document).scrollLeft() + $(window).width() / 2) ? 'e' : 'w';
     };
-    
+
+    $.fn.tipsy.showTip = function(options) {
+      this.css({visibility: 'visible', opacity: options.opacity});
+    };
+
+    $.fn.tipsy.hideTip = function(options) {
+      this.remove();
+    };
+
+    $.fn.tipsy.defaults = {
+        delayIn: 0,
+        delayOut: 0,
+        fade: false,
+        fallback: '',
+        gravity: 'n',
+        html: false,
+        live: false,
+        offset: 0,
+        opacity: 0.8,
+        title: 'title',
+        trigger: 'hover',
+        showTip: $.fn.tipsy.showTip,
+        hideTip: $.fn.tipsy.hideTip
+    };
+
 })(jQuery);
