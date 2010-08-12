@@ -16,10 +16,9 @@
         show: function() {
             var title = this.getTitle();
             if (title && this.enabled) {
-                var $tip = this.tip();
+                var $tip = this.resetTip(); // reset class in case of dynamic gravity
                 
-                $tip.find('.tipsy-inner')[this.options.html ? 'html' : 'text'](title);
-                $tip[0].className = 'tipsy'; // reset classname in case of dynamic gravity
+                $tip.find('.tipsy-inner')[this.options.html ? 'html' : 'text'](title);                
                 $tip.remove().css({top: 0, left: 0, visibility: 'hidden', display: 'block'}).appendTo(document.body);
                 
                 var pos = $.extend({}, this.$element.offset(), {
@@ -93,10 +92,15 @@
             title = ('' + title).replace(/(^\s*|\s*$)/, "");
             return title || o.fallback;
         },
-        
+
+        resetTip : function() {
+          return this.tip().attr('class', 'tipsy ' + this.options.className);
+        },
+
         tip: function() {
             if (!this.$tip) {
-                this.$tip = $('<div class="tipsy"></div>').html('<div class="tipsy-arrow"></div><div class="tipsy-inner"></div>');
+                this.$tip = $('<div></div>').html('<div class="tipsy-arrow"></div><div class="tipsy-inner"></div>');
+                this.resetTip();
             }
             return this.$tip;
         },
@@ -206,7 +210,8 @@
         title: 'title',
         trigger: 'hover',
         showTip: $.fn.tipsy.showTip,
-        hideTip: $.fn.tipsy.hideTip
+        hideTip: $.fn.tipsy.hideTip,
+        className: ''
     };
 
 })(jQuery);
